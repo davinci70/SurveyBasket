@@ -1,19 +1,26 @@
 ﻿using MapsterMapper;
 using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
-using SurveyBasket.Services;
+using SurveyBasket.Persistence;
+using SurveyBasket.Services.IService;
+using SurveyBasket.Services.Service;
 using System.Reflection;
 
 namespace SurveyBasket;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddDependencies(this IServiceCollection services)
+    public static IServiceCollection AddDependencies(this IServiceCollection services,
+        IConfiguration Configuration)
     {
         services.AddControllers();
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
         services.AddOpenApi();
 
-        
+        var connectionString = Configuration.GetConnectionString("DefaultConnection");
+
+        services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
+
+
         services
             .AddFluentValidationConfig()
             .AddMapsterConfig();
